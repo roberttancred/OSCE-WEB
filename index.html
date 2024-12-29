@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anti OSCE League</title>
   <link rel="stylesheet" href="styles.css">
+  <script>
+    // Basic JavaScript for validating username and password
+    function validateLogin(event) {
+      event.preventDefault(); // Prevent form submission
+      
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      // Replace these with your actual credentials
+      const validUsername = "Matt";
+      const validPassword = "Test_1";
+
+      if (username === validUsername && password === validPassword) {
+        window.location.href = "dashboard.html"; // Redirect to main dashboard
+      } else {
+        alert("Invalid username or password. Please try again.");
+      }
+    }
+  </script>
 </head>
 <body>
   <header>
