@@ -1,0 +1,145 @@
+/* General Reset for Consistency */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header and Navigation */
+header {
+  background: #007BFF;
+  color: #fff;
+  padding: 10px 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+
+header p {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* General Container */
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Forms */
+form {
+  margin: 20px 0;
+}
+
+form .form-group {
+  margin-bottom: 15px;
+}
+
+form input[type="text"],
+form input[type="password"],
+form button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+form input[type="text"]:focus,
+form input[type="password"]:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+}
+
+form button {
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+/* Timer */
+.timer {
+  font-size: 2rem;
+  color: #ff6f61;
+  text-align: center;
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+/* Instructions Section */
+.instructions-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.instructions {
+  flex: 1;
+  padding: 15px;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.instructions h2 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #007BFF;
+}
+
+.instructions p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Button */
+button.end-exam-btn {
+  display: block;
+  margin: 20px auto;
+  background-color: #d9534f;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button.end-exam-btn:hover {
+  background-color: #c9302c;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-top: 20px;
+}
