@@ -41,12 +41,13 @@
       DISCLAIMER: THIS CONTAINS PUBLICLY AVAILABLE MATERIAL ONLY AND IS FOR USE AT YOUR DISCRESION IT IS NOT MEDICAL ADVICE
       THIS WEBSITE IS FOR EDUCATIONAL PURPOSES ONLY
     </p>
-    <form>
+    <h2>Login</h2>
+    <form onsubmit="validateLogin(event)">
       <div class="form-group">
-        <input type="text" placeholder="Username" required>
+        <input type="text" id="username" placeholder="Username" required>
       </div>
       <div class="form-group">
-        <input type="password" placeholder="Password" required>
+        <input type="password" id="password" placeholder="Password" required>
       </div>
       <button type="submit">Login</button>
     </form>
