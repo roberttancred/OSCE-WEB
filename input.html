@@ -116,6 +116,10 @@
                 const questionLabel = document.createElement('label');
                 questionLabel.textContent = `Examiner Question ${i}`;
 
+                const questionInput = document.createElement('textarea');
+                questionInput.placeholder = `Enter Question ${i}`;
+                questionInput.id = `examinerQuestion${i}`;
+
                 const table = document.createElement('table');
                 const headerRow = document.createElement('tr');
                 const promptHeader = document.createElement('th');
@@ -154,6 +158,7 @@
                 }
 
                 questionDiv.appendChild(questionLabel);
+                questionDiv.appendChild(questionInput);
                 questionDiv.appendChild(table);
                 container.appendChild(questionDiv);
             }
@@ -173,6 +178,7 @@
             const container = document.getElementById('questionsContainer');
             const questionDivs = container.getElementsByClassName('question');
             Array.from(questionDivs).forEach((div, i) => {
+                const questionText = div.querySelector(`#examinerQuestion${i + 1}`).value;
                 const table = div.querySelector('table');
                 const rows = table.querySelectorAll('tr:not(:first-child)');
                 const criteria = [];
@@ -182,7 +188,7 @@
                     const marks = row.cells[2].querySelector('textarea').value;
                     criteria.push({ prompt, details, marks });
                 });
-                questions.push({ question: `Question ${i + 1}`, criteria });
+                questions.push({ question: questionText, criteria });
             });
 
             // Extract additional fields
