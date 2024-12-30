@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSCE Case Data Entry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            margin-top: 5px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .small-text {
+            font-size: 12px;
+            color: #666;
+        }
+        .question-box {
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+    </style>
+    <script>
+        function addExaminerQuestions() {
+            const numberOfQuestions = parseInt(document.getElementById('num_questions').value);
+            const questionsContainer = document.getElementById('questions_container');
+            questionsContainer.innerHTML = '';
+
+            for (let i = 1; i <= numberOfQuestions; i++) {
+                const questionBox = document.createElement('div');
+                questionBox.className = 'question-box';
+
+                const questionLabel = document.createElement('label');
+                questionLabel.textContent = `Question ${i}`;
+                questionBox.appendChild(questionLabel);
+
+                const questionTextarea = document.createElement('textarea');
+                questionTextarea.name = `examiner_question_${i}`;
+                questionTextarea.rows = 3;
+                questionTextarea.placeholder = `Enter question ${i}`;
+                questionBox.appendChild(questionTextarea);
+
+                const markingLabel = document.createElement('label');
+                markingLabel.textContent = `Marking Schedule for Question ${i}`;
+                questionBox.appendChild(markingLabel);
+
+                const markingTextarea = document.createElement('textarea');
+                markingTextarea.name = `marking_schedule_${i}`;
+                markingTextarea.rows = 3;
+                markingTextarea.placeholder = `Enter marking schedule for question ${i}`;
+                questionBox.appendChild(markingTextarea);
+
+                questionsContainer.appendChild(questionBox);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>OSCE Case Data Entry</h1>
+    <form method="POST" action="/generate">
+        <label for="case_id">Case ID</label>
+        <input type="text" id="case_id" name="case_id" placeholder="Enter a unique Case ID" required>
+
+        <label for="title">Case Title</label>
+        <input type="text" id="title" name="title" placeholder="Enter the case title" required>
+
+        <label for="year">Year</label>
+        <input type="number" id="year" name="year" placeholder="Enter the year" required>
+
+        <label for="exam_type">Exam Type</label>
+        <input type="text" id="exam_type" name="exam_type" placeholder="e.g., ACEM Fellowship" required>
+
+        <label for="main_topic">Main Topic</label>
+        <input type="text" id="main_topic" name="main_topic" placeholder="Enter the main topic" required>
+
+        <label for="domains">Domains</label>
+        <input type="text" id="domains" name="domains" placeholder="e.g., Communication, Clinical Reasoning">
+        <span class="small-text">Separate multiple domains with commas</span>
+
+        <label for="key_features">Key Features</label>
+        <input type="text" id="key_features" name="key_features" placeholder="e.g., Vital Signs Recognition, Informed Consent">
+        <span class="small-text">Separate multiple features with commas</span>
+
+        <label for="candidate_instructions">Candidate Instructions</label>
+        <textarea id="candidate_instructions" name="candidate_instructions" rows="6" placeholder="Paste the candidate instructions here" required></textarea>
+
+        <label for="props">Upload Props (Optional)</label>
+        <input type="file" id="props" name="props" multiple>
+
+        <label for="num_questions">Number of Examiner Questions</label>
+        <select id="num_questions" name="num_questions" onchange="addExaminerQuestions()">
+            <option value="0">Select number of questions</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+
+        <div id="questions_container"></div>
+
+        <label for="role_player_instructions">Role Player Instructions</label>
+        <textarea id="role_player_instructions" name="role_player_instructions" rows="4" placeholder="Enter role player instructions here"></textarea>
+
+        <button type="submit">Generate JSON</button>
+    </form>
+</body>
+</html>
