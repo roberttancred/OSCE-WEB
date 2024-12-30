@@ -51,6 +51,21 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        .questions-container {
+            margin-top: 20px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .question label {
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -64,7 +79,9 @@
             <textarea id="props" placeholder="List the props required"></textarea>
 
             <label for="examinerQuestions">Number of Examiner Questions</label>
-            <input type="number" id="examinerQuestions" min="1" placeholder="Enter number of examiner questions">
+            <input type="number" id="examinerQuestions" min="1" max="5" placeholder="Enter number of examiner questions">
+
+            <div class="questions-container" id="questionsContainer"></div>
 
             <label for="rolePlayerInstructions">Role Player Instructions</label>
             <textarea id="rolePlayerInstructions" placeholder="Enter role player instructions here"></textarea>
@@ -74,6 +91,35 @@
     </div>
 
     <script>
+        document.getElementById('examinerQuestions').addEventListener('input', function () {
+            const numQuestions = parseInt(this.value, 10) || 0;
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= numQuestions; i++) {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+
+                const questionLabel = document.createElement('label');
+                questionLabel.textContent = `Examiner Question ${i}`;
+                const questionInput = document.createElement('textarea');
+                questionInput.id = `examinerQuestion${i}`;
+                questionInput.placeholder = `Enter question ${i}`;
+
+                const criteriaLabel = document.createElement('label');
+                criteriaLabel.textContent = `Marking Criteria for Question ${i}`;
+                const criteriaInput = document.createElement('textarea');
+                criteriaInput.id = `markingCriteria${i}`;
+                criteriaInput.placeholder = `Enter marking criteria for question ${i}`;
+
+                questionDiv.appendChild(questionLabel);
+                questionDiv.appendChild(questionInput);
+                questionDiv.appendChild(criteriaLabel);
+                questionDiv.appendChild(criteriaInput);
+                container.appendChild(questionDiv);
+            }
+        });
+
         document.getElementById('generate').addEventListener('click', function () {
             // Generate random ID
             const id = 'OSCE-' + Math.random().toString(36).substr(2, 9);
@@ -83,6 +129,16 @@
             const props = document.getElementById('props').value;
             const examinerQuestions = document.getElementById('examinerQuestions').value;
             const rolePlayerInstructions = document.getElementById('rolePlayerInstructions').value;
+
+            const questions = [];
+            for (let i = 1; i <= examinerQuestions; i++) {
+                const questionText = document.getElementById(`examinerQuestion${i}`).value;
+                const markingCriteria = document.getElementById(`markingCriteria${i}`).value;
+                questions.push({
+                    question: questionText,
+                    markingCriteria: markingCriteria
+                });
+            }
 
             // Extract additional fields
             const domains = extractDomains(candidateInstructions);
@@ -95,8 +151,8 @@
                 id,
                 candidateInstructions,
                 props,
-                examinerQuestions,
                 rolePlayerInstructions,
+                examinerQuestions: questions,
                 domains,
                 mainTopic,
                 keyFeatures,
