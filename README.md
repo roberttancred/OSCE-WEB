@@ -8,6 +8,8 @@ my goals are
 3. be able to track performance over time
 4. have a working area where a timer is present
 5. make it able to add new cases rapidly
+6. Need to make a generic examiner template. This should be able to generate the standard 3 column design that most marking templates use
+
 
 TO DO:
 Needs proper server migration to be able to have a proper password protection service
