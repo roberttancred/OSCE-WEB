@@ -3,138 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCE Case Data Entry</title>
+    <title>OSCE Upload Page</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        form {
-            max-width: 600px;
-            margin: auto;
+            margin: 0;
             padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            background-color: #f4f4f4;
         }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h1 {
+            text-align: center;
+        }
+
         label {
-            font-weight: bold;
             display: block;
-            margin-top: 15px;
+            margin: 10px 0 5px;
+            font-weight: bold;
         }
-        input, select, textarea, button {
+
+        input, textarea, button {
             width: 100%;
-            margin-top: 5px;
             padding: 10px;
-            font-size: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
+
         button {
             background-color: #007BFF;
             color: white;
             border: none;
             cursor: pointer;
+            font-size: 16px;
         }
+
         button:hover {
             background-color: #0056b3;
         }
-        .small-text {
-            font-size: 12px;
-            color: #666;
-        }
-        .question-box {
-            margin-top: 15px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 8px;
-            background-color: #fff;
-        }
     </style>
-    <script>
-        function addExaminerQuestions() {
-            const numberOfQuestions = parseInt(document.getElementById('num_questions').value);
-            const questionsContainer = document.getElementById('questions_container');
-            questionsContainer.innerHTML = '';
-
-            for (let i = 1; i <= numberOfQuestions; i++) {
-                const questionBox = document.createElement('div');
-                questionBox.className = 'question-box';
-
-                const questionLabel = document.createElement('label');
-                questionLabel.textContent = `Question ${i}`;
-                questionBox.appendChild(questionLabel);
-
-                const questionTextarea = document.createElement('textarea');
-                questionTextarea.name = `examiner_question_${i}`;
-                questionTextarea.rows = 3;
-                questionTextarea.placeholder = `Enter question ${i}`;
-                questionBox.appendChild(questionTextarea);
-
-                const markingLabel = document.createElement('label');
-                markingLabel.textContent = `Marking Schedule for Question ${i}`;
-                questionBox.appendChild(markingLabel);
-
-                const markingTextarea = document.createElement('textarea');
-                markingTextarea.name = `marking_schedule_${i}`;
-                markingTextarea.rows = 3;
-                markingTextarea.placeholder = `Enter marking schedule for question ${i}`;
-                questionBox.appendChild(markingTextarea);
-
-                questionsContainer.appendChild(questionBox);
-            }
-        }
-    </script>
 </head>
 <body>
-    <h1>OSCE Case Data Entry</h1>
-    <form method="POST" action="/generate">
-        <label for="case_id">Case ID</label>
-        <input type="text" id="case_id" name="case_id" placeholder="Enter a unique Case ID" required>
+    <div class="container">
+        <h1>OSCE Upload</h1>
+        <form id="osceForm">
+            <label for="candidateInstructions">Candidate Instructions</label>
+            <textarea id="candidateInstructions" placeholder="Enter candidate instructions here"></textarea>
 
-        <label for="title">Case Title</label>
-        <input type="text" id="title" name="title" placeholder="Enter the case title" required>
+            <label for="props">Props</label>
+            <textarea id="props" placeholder="List the props required"></textarea>
 
-        <label for="year">Year</label>
-        <input type="number" id="year" name="year" placeholder="Enter the year" required>
+            <label for="examinerQuestions">Number of Examiner Questions</label>
+            <input type="number" id="examinerQuestions" min="1" placeholder="Enter number of examiner questions">
 
-        <label for="exam_type">Exam Type</label>
-        <input type="text" id="exam_type" name="exam_type" placeholder="e.g., ACEM Fellowship" required>
+            <label for="rolePlayerInstructions">Role Player Instructions</label>
+            <textarea id="rolePlayerInstructions" placeholder="Enter role player instructions here"></textarea>
 
-        <label for="main_topic">Main Topic</label>
-        <input type="text" id="main_topic" name="main_topic" placeholder="Enter the main topic" required>
+            <button type="button" id="generate">Generate and Save OSCE</button>
+        </form>
+    </div>
 
-        <label for="domains">Domains</label>
-        <input type="text" id="domains" name="domains" placeholder="e.g., Communication, Clinical Reasoning">
-        <span class="small-text">Separate multiple domains with commas</span>
+    <script>
+        document.getElementById('generate').addEventListener('click', function () {
+            // Generate random ID
+            const id = 'OSCE-' + Math.random().toString(36).substr(2, 9);
 
-        <label for="key_features">Key Features</label>
-        <input type="text" id="key_features" name="key_features" placeholder="e.g., Vital Signs Recognition, Informed Consent">
-        <span class="small-text">Separate multiple features with commas</span>
+            // Extract input values
+            const candidateInstructions = document.getElementById('candidateInstructions').value;
+            const props = document.getElementById('props').value;
+            const examinerQuestions = document.getElementById('examinerQuestions').value;
+            const rolePlayerInstructions = document.getElementById('rolePlayerInstructions').value;
 
-        <label for="candidate_instructions">Candidate Instructions</label>
-        <textarea id="candidate_instructions" name="candidate_instructions" rows="6" placeholder="Paste the candidate instructions here" required></textarea>
+            // Extract additional fields
+            const domains = extractDomains(candidateInstructions);
+            const mainTopic = extractMainTopic(candidateInstructions);
+            const keyFeatures = extractKeyFeatures(candidateInstructions);
+            const investigations = extractInvestigations(candidateInstructions);
 
-        <label for="props">Upload Props (Optional)</label>
-        <input type="file" id="props" name="props" multiple>
+            // Create JSON object
+            const osceData = {
+                id,
+                candidateInstructions,
+                props,
+                examinerQuestions,
+                rolePlayerInstructions,
+                domains,
+                mainTopic,
+                keyFeatures,
+                investigations
+            };
 
-        <label for="num_questions">Number of Examiner Questions</label>
-        <select id="num_questions" name="num_questions" onchange="addExaminerQuestions()">
-            <option value="0">Select number of questions</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
+            // Save to /OSCE folder
+            saveOSCE(osceData);
 
-        <div id="questions_container"></div>
+            alert(`OSCE saved with ID: ${id}`);
+        });
 
-        <label for="role_player_instructions">Role Player Instructions</label>
-        <textarea id="role_player_instructions" name="role_player_instructions" rows="4" placeholder="Enter role player instructions here"></textarea>
+        function extractDomains(text) {
+            const keywords = ['communication', 'clinical reasoning', 'procedural skills', 'management', 'teamwork'];
+            return keywords.filter(keyword => text.toLowerCase().includes(keyword));
+        }
 
-        <button type="submit">Generate JSON</button>
-    </form>
+        function extractMainTopic(text) {
+            const match = text.match(/\b(main topic|focus):\s*(.+)/i);
+            return match ? match[2] : 'Not specified';
+        }
+
+        function extractKeyFeatures(text) {
+            const match = text.match(/\b(key features|tasks):\s*(.+)/i);
+            return match ? match[2].split(',').map(item => item.trim()) : [];
+        }
+
+        function extractInvestigations(text) {
+            const investigations = ['ECG', 'Chest X-ray', 'Blood tests', 'Ultrasound', 'CT scan', 'blood gas'];
+            return investigations.filter(item => text.toLowerCase().includes(item.toLowerCase()));
+        }
+
+        function saveOSCE(data) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `OSCE_${data.id}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
 </body>
 </html>
