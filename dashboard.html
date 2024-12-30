@@ -1,121 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    body {
-      background: url('league.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-
-    .dashboard {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .section {
-      margin: 20px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 10px;
-      width: 80%;
-      max-width: 600px;
-    }
-
-    .section h2 {
-      margin-bottom: 15px;
-    }
-
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      font-size: 1rem;
-      color: white;
-      background-color: #007BFF;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .button:hover {
-      background-color: #0056b3;
-    }
-
-    .search-box {
-      margin-bottom: 20px;
-    }
-
-    .search-box input {
-      width: 80%;
-      padding: 10px;
-      font-size: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-
-    .results {
-      text-align: left;
-      margin-top: 20px;
-      background: rgba(255, 255, 255, 0.8);
-      color: black;
-      padding: 10px;
-      border-radius: 5px;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-  </style>
-  <script>
-    function searchOSCEs() {
-      const query = document.getElementById('search').value.toLowerCase();
-      const resultsContainer = document.getElementById('results');
-      const osces = ["OSCE 1: Abdominal Pain", "OSCE 2: Chest Pain", "OSCE 3: Shortness of Breath", "OSCE 4: Neurological Exam", "OSCE 5: Trauma Assessment"];
-
-      resultsContainer.innerHTML = ''; // Clear previous results
-
-      if (query.trim() !== '') {
-        const filtered = osces.filter(osce => osce.toLowerCase().includes(query));
-
-        if (filtered.length > 0) {
-          filtered.forEach(osce => {
-            const div = document.createElement('div');
-            div.textContent = osce;
-            resultsContainer.appendChild(div);
-          });
-        } else {
-          resultsContainer.innerHTML = '<div>No OSCEs found.</div>';
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACEM OSCE Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
-      }
-    }
-  </script>
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            width: 80%;
+            height: 80%;
+        }
+
+        .quadrant {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .quadrant:hover {
+            transform: scale(1.05);
+        }
+
+        .quadrant img {
+            width: 50%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .quadrant a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 <body>
-  <div class="dashboard">
-    <div class="section">
-      <h2>Practice Section</h2>
-      <a href="practice.html" class="button">Go to Practice</a>
+    <div class="dashboard">
+        <!-- Input OSCE Settings -->
+        <div class="quadrant">
+            <img src="Input.jpeg" alt="Input OSCE Settings">
+            <a href="input.html">Input OSCE Settings</a>
+        </div>
+
+        <!-- Practice OSCEs -->
+        <div class="quadrant">
+            <img src="Practice.jpeg" alt="Practice OSCEs">
+            <a href="practice.html">Practice OSCEs</a>
+        </div>
+
+        <!-- Analytics -->
+        <div class="quadrant">
+            <img src="Analytics.jpeg" alt="View Analytics">
+            <a href="analytics.html">View Analytics</a>
+        </div>
+
+        <!-- Search OSCEs -->
+        <div class="quadrant">
+            <img src="Search.jpeg" alt="Search OSCEs">
+            <a href="search.html">Search OSCEs</a>
+        </div>
     </div>
-
-    <div class="section">
-      <h2>Analytics Section</h2>
-      <a href="analytics.html" class="button">View Analytics</a>
-
-      <div class="search-box">
-        <h3>Search OSCEs</h3>
-        <input type="text" id="search" placeholder="Search OSCEs..." oninput="searchOSCEs()">
-      </div>
-
-      <div id="results" class="results"></div>
-    </div>
-  </div>
 </body>
 </html>
