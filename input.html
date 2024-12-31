@@ -32,7 +32,7 @@
             font-weight: bold;
         }
 
-        input, textarea, button {
+        input, textarea, button, select {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -91,150 +91,185 @@
             <label for="props">Props</label>
             <textarea id="props" placeholder="List the props required"></textarea>
 
-            <label for="examinerQuestions">Number of Examiner Questions</label>
-            <input type="number" id="examinerQuestions" min="1" max="5" placeholder="Enter number of examiner questions">
+            <label for="modelType">Select Model Type</label>
+            <select id="modelType">
+                <option value="questions">Questions Model</option>
+                <option value="domains">Domains Model</option>
+            </select>
 
             <div class="questions-container" id="questionsContainer"></div>
 
             <label for="rolePlayerInstructions">Role Player Instructions</label>
             <textarea id="rolePlayerInstructions" placeholder="Enter role player instructions here"></textarea>
 
+            <label for="uploadPDF">Upload PDF</label>
+            <input type="file" id="uploadPDF" accept="application/pdf">
+
             <button type="button" id="generate">Generate and Save OSCE</button>
         </form>
     </div>
 
     <script>
-        document.getElementById('examinerQuestions').addEventListener('input', function () {
-            const numQuestions = parseInt(this.value, 10) || 0;
+        document.getElementById('modelType').addEventListener('change', function () {
+            const selectedModel = this.value;
             const container = document.getElementById('questionsContainer');
             container.innerHTML = '';
 
-            for (let i = 1; i <= numQuestions; i++) {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'question';
+            if (selectedModel === 'questions') {
+                const numQuestionsLabel = document.createElement('label');
+                numQuestionsLabel.textContent = 'Number of Examiner Questions';
+                const numQuestionsInput = document.createElement('input');
+                numQuestionsInput.type = 'number';
+                numQuestionsInput.id = 'examinerQuestions';
+                numQuestionsInput.min = '1';
+                numQuestionsInput.max = '5';
+                numQuestionsInput.placeholder = 'Enter number of examiner questions';
+                container.appendChild(numQuestionsLabel);
+                container.appendChild(numQuestionsInput);
 
-                const questionLabel = document.createElement('label');
-                questionLabel.textContent = `Examiner Question ${i}`;
+                numQuestionsInput.addEventListener('input', function () {
+                    const numQuestions = parseInt(this.value, 10) || 0;
+                    const questionsDiv = document.createElement('div');
+                    questionsDiv.id = 'dynamicQuestions';
+                    container.appendChild(questionsDiv);
+                    questionsDiv.innerHTML = '';
 
-                const questionInput = document.createElement('textarea');
-                questionInput.placeholder = `Enter Question ${i}`;
-                questionInput.id = `examinerQuestion${i}`;
+                    for (let i = 1; i <= numQuestions; i++) {
+                        const questionDiv = document.createElement('div');
+                        questionDiv.className = 'question';
 
-                const table = document.createElement('table');
-                const headerRow = document.createElement('tr');
-                const promptHeader = document.createElement('th');
-                promptHeader.textContent = 'Prompt';
-                const detailsHeader = document.createElement('th');
-                detailsHeader.textContent = 'Details';
-                const marksHeader = document.createElement('th');
-                marksHeader.textContent = 'Marks';
+                        const questionLabel = document.createElement('label');
+                        questionLabel.textContent = `Examiner Question ${i}`;
 
-                headerRow.appendChild(promptHeader);
-                headerRow.appendChild(detailsHeader);
-                headerRow.appendChild(marksHeader);
-                table.appendChild(headerRow);
+                        const questionInput = document.createElement('textarea');
+                        questionInput.placeholder = `Enter Question ${i}`;
+                        questionInput.id = `examinerQuestion${i}`;
 
-                for (let j = 0; j < 3; j++) {
-                    const row = document.createElement('tr');
-                    const promptCell = document.createElement('td');
-                    const promptInput = document.createElement('textarea');
-                    promptInput.placeholder = `Prompt ${j + 1}`;
-                    promptCell.appendChild(promptInput);
+                        const table = document.createElement('table');
+                        const headerRow = document.createElement('tr');
+                        const promptHeader = document.createElement('th');
+                        promptHeader.textContent = 'Prompt';
+                        const detailsHeader = document.createElement('th');
+                        detailsHeader.textContent = 'Details';
+                        const marksHeader = document.createElement('th');
+                        marksHeader.textContent = 'Marks';
 
-                    const detailsCell = document.createElement('td');
-                    const detailsInput = document.createElement('textarea');
-                    detailsInput.placeholder = `Details ${j + 1}`;
-                    detailsCell.appendChild(detailsInput);
+                        headerRow.appendChild(promptHeader);
+                        headerRow.appendChild(detailsHeader);
+                        headerRow.appendChild(marksHeader);
+                        table.appendChild(headerRow);
 
-                    const marksCell = document.createElement('td');
-                    const marksInput = document.createElement('textarea');
-                    marksInput.placeholder = `Mark ${j + 1}`;
-                    marksCell.appendChild(marksInput);
+                        for (let j = 0; j < 3; j++) {
+                            const row = document.createElement('tr');
+                            const promptCell = document.createElement('td');
+                            const promptInput = document.createElement('textarea');
+                            promptInput.placeholder = `Prompt ${j + 1}`;
+                            promptCell.appendChild(promptInput);
 
-                    row.appendChild(promptCell);
-                    row.appendChild(detailsCell);
-                    row.appendChild(marksCell);
-                    table.appendChild(row);
-                }
+                            const detailsCell = document.createElement('td');
+                            const detailsInput = document.createElement('textarea');
+                            detailsInput.placeholder = `Details ${j + 1}`;
+                            detailsCell.appendChild(detailsInput);
 
-                questionDiv.appendChild(questionLabel);
-                questionDiv.appendChild(questionInput);
-                questionDiv.appendChild(table);
-                container.appendChild(questionDiv);
+                            const marksCell = document.createElement('td');
+                            const marksInput = document.createElement('textarea');
+                            marksInput.placeholder = `Mark ${j + 1}`;
+                            marksCell.appendChild(marksInput);
+
+                            row.appendChild(promptCell);
+                            row.appendChild(detailsCell);
+                            row.appendChild(marksCell);
+                            table.appendChild(row);
+                        }
+
+                        questionDiv.appendChild(questionLabel);
+                        questionDiv.appendChild(questionInput);
+                        questionDiv.appendChild(table);
+                        questionsDiv.appendChild(questionDiv);
+                    }
+                });
+            } else if (selectedModel === 'domains') {
+                const domainsLabel = document.createElement('label');
+                domainsLabel.textContent = 'Domains';
+
+                const domainsTextarea = document.createElement('textarea');
+                domainsTextarea.id = 'domainsInput';
+                domainsTextarea.placeholder = 'Enter domains (e.g., Communication, Clinical Reasoning, etc.)';
+
+                container.appendChild(domainsLabel);
+                container.appendChild(domainsTextarea);
+
+                const keyFeaturesLabel = document.createElement('label');
+                keyFeaturesLabel.textContent = 'Key Features';
+
+                const keyFeaturesTextarea = document.createElement('textarea');
+                keyFeaturesTextarea.id = 'keyFeaturesInput';
+                keyFeaturesTextarea.placeholder = 'Enter key features';
+
+                container.appendChild(keyFeaturesLabel);
+                container.appendChild(keyFeaturesTextarea);
+
+                const investigationsLabel = document.createElement('label');
+                investigationsLabel.textContent = 'Investigations';
+
+                const investigationsTextarea = document.createElement('textarea');
+                investigationsTextarea.id = 'investigationsInput';
+                investigationsTextarea.placeholder = 'Enter investigations';
+
+                container.appendChild(investigationsLabel);
+                container.appendChild(investigationsTextarea);
             }
         });
 
         document.getElementById('generate').addEventListener('click', function () {
-            // Generate random ID
+            const modelType = document.getElementById('modelType').value;
             const id = 'OSCE-' + Math.random().toString(36).substr(2, 9);
-
-            // Extract input values
             const candidateInstructions = document.getElementById('candidateInstructions').value;
             const props = document.getElementById('props').value;
-            const examinerQuestions = document.getElementById('examinerQuestions').value;
             const rolePlayerInstructions = document.getElementById('rolePlayerInstructions').value;
 
-            const questions = [];
-            const container = document.getElementById('questionsContainer');
-            const questionDivs = container.getElementsByClassName('question');
-            Array.from(questionDivs).forEach((div, i) => {
-                const questionText = div.querySelector(`#examinerQuestion${i + 1}`).value;
-                const table = div.querySelector('table');
-                const rows = table.querySelectorAll('tr:not(:first-child)');
-                const criteria = [];
-                rows.forEach(row => {
-                    const prompt = row.cells[0].querySelector('textarea').value;
-                    const details = row.cells[1].querySelector('textarea').value;
-                    const marks = row.cells[2].querySelector('textarea').value;
-                    criteria.push({ prompt, details, marks });
+            let examinerQuestions = [];
+            let domains = [];
+            let keyFeatures = [];
+            let investigations = [];
+
+            if (modelType === 'questions') {
+                const questionDivs = document.getElementById('dynamicQuestions').querySelectorAll('.question');
+                questionDivs.forEach((div, i) => {
+                    const questionText = div.querySelector(`#examinerQuestion${i + 1}`).value;
+                    const table = div.querySelector('table');
+                    const rows = table.querySelectorAll('tr:not(:first-child)');
+                    const criteria = [];
+                    rows.forEach(row => {
+                        const prompt = row.cells[0].querySelector('textarea').value;
+                        const details = row.cells[1].querySelector('textarea').value;
+                        const marks = row.cells[2].querySelector('textarea').value;
+                        criteria.push({ prompt, details, marks });
+                    });
+                    examinerQuestions.push({ question: questionText, criteria });
                 });
-                questions.push({ question: questionText, criteria });
-            });
+            } else if (modelType === 'domains') {
+                domains = document.getElementById('domainsInput').value.split(',').map(item => item.trim());
+                keyFeatures = document.getElementById('keyFeaturesInput').value.split(',').map(item => item.trim());
+                investigations = document.getElementById('investigationsInput').value.split(',').map(item => item.trim());
+            }
 
-            // Extract additional fields
-            const domains = extractDomains(candidateInstructions);
-            const mainTopic = extractMainTopic(candidateInstructions);
-            const keyFeatures = extractKeyFeatures(candidateInstructions);
-            const investigations = extractInvestigations(candidateInstructions);
-
-            // Create JSON object
             const osceData = {
                 id,
                 candidateInstructions,
                 props,
                 rolePlayerInstructions,
-                examinerQuestions: questions,
+                modelType,
+                examinerQuestions,
                 domains,
-                mainTopic,
                 keyFeatures,
                 investigations
             };
 
-            // Save to /OSCE folder
             saveOSCE(osceData);
 
             alert(`OSCE saved with ID: ${id}`);
         });
-
-        function extractDomains(text) {
-            const keywords = ['communication', 'clinical reasoning', 'procedural skills', 'management', 'teamwork'];
-            return keywords.filter(keyword => text.toLowerCase().includes(keyword));
-        }
-
-        function extractMainTopic(text) {
-            const match = text.match(/\b(main topic|focus):\s*(.+)/i);
-            return match ? match[2] : 'Not specified';
-        }
-
-        function extractKeyFeatures(text) {
-            const match = text.match(/\b(key features|tasks):\s*(.+)/i);
-            return match ? match[2].split(',').map(item => item.trim()) : [];
-        }
-
-        function extractInvestigations(text) {
-            const investigations = ['ECG', 'Chest X-ray', 'Blood tests', 'Ultrasound', 'CT scan', 'blood gas'];
-            return investigations.filter(item => text.toLowerCase().includes(item.toLowerCase()));
-        }
 
         function saveOSCE(data) {
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
