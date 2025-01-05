@@ -3,29 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OSCE Practice</title>
+  <title>OSCE Timer</title>
   <style>
     body {
-      font-family: "Courier New", Courier, monospace;
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
       margin: 0;
-      background-color: #121212;
-      color: #00ff00;
+      background-color: #f5f5f5;
+      color: #333;
+      transition: background-color 0.5s ease-in-out;
     }
     h1 {
       font-size: 2.5rem;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      text-shadow: 0px 0px 8px #00ff00;
-    }
-    .subtitle {
-      font-size: 1.2rem;
       margin-bottom: 20px;
-      font-style: italic;
     }
     .timers {
       display: flex;
@@ -40,17 +34,17 @@
       width: 140px;
       height: 140px;
       margin: 0 20px;
-      background-color: #1c1c1c;
-      border: 2px solid #00ff00;
+      background-color: white;
+      border: 2px solid #333;
       border-radius: 50%;
-      box-shadow: 0 0 15px #00ff00;
       font-size: 1.5rem;
       font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       text-align: center;
     }
     .arrow {
       font-size: 2rem;
-      color: #00ff00;
+      color: #333;
     }
     .controls {
       display: flex;
@@ -64,40 +58,41 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      color: #ffffff;
+      color: white;
     }
     button#start {
-      background-color: #007700;
-      box-shadow: 0 0 10px #00ff00;
+      background-color: #4caf50;
     }
     button#reset {
-      background-color: #770000;
-      box-shadow: 0 0 10px #ff0000;
+      background-color: #f44336;
+    }
+    /* Flashing effect */
+    .flash {
+      background-color: red !important;
     }
   </style>
 </head>
 <body>
-  <h1>TIMERS</h1>
-  <p class="subtitle">Your mission: Execute OSCE operations with precision.</p>
+  <h1>OSCE Practice Timer</h1>
   <div class="timers">
     <div class="timer" id="readingTimer">
       <span>2:00</span>
-      <div>Reading Phase</div>
+      <div>Reading</div>
     </div>
     <div class="arrow">➡️</div>
     <div class="timer" id="osceTimer">
       <span>7:00</span>
-      <div>OSCE Phase</div>
+      <div>OSCE</div>
     </div>
     <div class="arrow">➡️</div>
     <div class="timer" id="feedbackTimer">
       <span>3:00</span>
-      <div>Feedback Phase</div>
+      <div>Feedback</div>
     </div>
   </div>
   <div class="controls">
-    <button id="start">Engage</button>
-    <button id="reset">Abort</button>
+    <button id="start">Start</button>
+    <button id="reset">Reset</button>
   </div>
 
   <!-- Bell Sounds -->
@@ -145,6 +140,13 @@
       sound.play();
     }
 
+    function flashScreen() {
+      document.body.classList.add("flash");
+      setTimeout(() => {
+        document.body.classList.remove("flash");
+      }, 1000);
+    }
+
     function startTimers() {
       if (currentTimerIndex >= timers.length) return;
 
@@ -162,8 +164,9 @@
         timer.element.textContent = formatTime(remainingTime);
         remainingTime--;
 
-        // Special alarm for OSCE timer at 6 minutes (1 minute left)
-        if (currentTimerIndex === 1 && remainingTime === 60) {
+        // Flash the screen and ring a bell at 1 minute to go in OSCE (when 6 minutes have passed)
+        if (currentTimerIndex === 1 && remainingTime === 60) { 
+          flashScreen();
           playBell(handBell);
         }
 
@@ -183,6 +186,7 @@
     function resetTimers() {
       clearInterval(countdown);
       currentTimerIndex = 0;
+      document.body.classList.remove("flash");
       timers[0].element.textContent = formatTime(readingDuration);
       timers[1].element.textContent = formatTime(osceDuration);
       timers[2].element.textContent = formatTime(feedbackDuration);
