@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blood Gas Generator</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; }
+    .output { margin-top: 2em; padding: 1em; background: #f8f8f8; border-radius: 6px; }
+    button { padding: 0.6em 1.2em; font-size: 1em; }
+    h2, h3 { margin-bottom: 0.4em; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin-bottom: 0.3em; }
+  </style>
+</head>
+<body>
+
+  <h1>Blood Gas + Clinical Story Generator</h1>
+  <button onclick="generateBloodGas()">Generate Blood Gas</button>
+
+  <div class="output" id="resultArea"></div>
+
+  <script>
+    function generateBloodGas() {
+      const gasType = Math.random() > 0.5 ? 'ABG' : 'VBG';
+
+      // Randomized blood gas + electrolytes
+      const pH = (7.1 + Math.random() * 0.4).toFixed(2);
+      const pCO2 = (20 + Math.random() * 40).toFixed(1);
+      const HCO3 = (10 + Math.random() * 20).toFixed(1);
+      const pO2 = gasType === 'ABG' ? (40 + Math.random() * 60).toFixed(1) : 'N/A';
+      const baseExcess = (-10 + Math.random() * 20).toFixed(1);
+      const lactate = (0.5 + Math.random() * 5).toFixed(1);
+
+      // Electrolytes
+      const Na = (130 + Math.random() * 10).toFixed(0);
+      const Cl = (90 + Math.random() * 20).toFixed(0);
+      const albumin = (30 + Math.random() * 10).toFixed(1); // g/L
+
+      // Derived calculations
+      const AG = (Na - Cl - HCO3).toFixed(1);
+      const correctedAG = (AG - (0.25 * (40 - albumin))).toFixed(1);
+      const deltaAG = AG - 12;
+      const deltaHCO3 = 24 - HCO3;
+      const deltaRatio = (deltaAG / deltaHCO3).toFixed(2);
+
+      const interpretation = interpretABG(pH, pCO2, HCO3);
+      const compensation = checkCompensation(pH, pCO2, HCO3);
+      const story = generateClinicalStory(interpretation);
+
+      document.getElementById('resultArea').innerHTML = `
+        <h2>${gasType} Result</h2>
+        <ul>
+          <li><strong>pH:</strong> ${pH}</li>
+          <li><strong>pCO₂:</strong> ${pCO2} mmHg</li>
+          <li><strong>HCO₃⁻:</strong> ${HCO3} mmol/L</li>
+          <li><strong>pO₂:</strong> ${pO2} mmHg</li>
+          <li><strong>Base Excess:</strong> ${baseExcess} mmol/L</li>
+          <li><strong>Lactate:</strong> ${lactate} mmol/L</li>
+        </ul>
+
+        <h3>Electrolytes</h3>
+        <ul>
+          <li><strong>Na⁺:</strong> ${Na} mmol/L</li>
+          <li><strong>Cl⁻:</strong> ${Cl} mmol/L</li>
+          <li><strong>Albumin:</strong> ${albumin} g/L</li>
+        </ul>
+
+        <h3>Acid-Base Interpretation</h3>
+        <p>${interpretation}</p>
+
+        <h3>Compensation Check</h3>
+        <p>${compensation}</p>
+
+        <h3>Anion Gap</h3>
+        <ul>
+          <li><strong>AG:</strong> ${AG} mmol/L</li>
+          <li><strong>Corrected AG (for albumin):</strong> ${correctedAG} mmol/L</li>
+        </ul>
+
+        <h3>Delta Gap</h3>
+        <ul>
+          <li><strong>Delta AG:</strong> ${deltaAG.toFixed(1)}</li>
+          <li><strong>Delta HCO₃⁻:</strong> ${deltaHCO3.toFixed(1)}</li>
+          <li><strong>Delta Ratio:</strong> ${deltaRatio}</li>
+        </ul>
+
+        <h3>Clinical Story</h3>
+        <p>${story}</p>
+      `;
+    }
+
+    function interpretABG(pH, pCO2, HCO3) {
+      pH = parseFloat(pH);
+      pCO2 = parseFloat(pCO2);
+      HCO3 = parseFloat(HCO3);
+
+      if (pH < 7.35 && pCO2 > 45) return "Primary respiratory acidosis";
+      if (pH < 7.35 && HCO3 < 22) return "Primary metabolic acidosis";
+      if (pH > 7.45 && pCO2 < 35) return "Primary respiratory alkalosis";
+      if (pH > 7.45 && HCO3 > 26) return "Primary metabolic alkalosis";
+      return "Mixed or compensated acid-base disorder";
+    }
+
+    function checkCompensation(pH, pCO2, HCO3) {
+      pH = parseFloat(pH);
+      pCO2 = parseFloat(pCO2);
+      HCO3 = parseFloat(HCO3);
+
+      const acidBaseType = interpretABG(pH, pCO2, HCO3);
+      let expected;
+
+      if (acidBaseType === "Primary metabolic acidosis") {
+        expected = 40 - (1.2 * (24 - HCO3));
+        return `Expected pCO₂ ≈ ${expected.toFixed(1)} mmHg (Winter's formula)`;
+      }
+      if (acidBaseType === "Primary metabolic alkalosis") {
+        expected = 40 + (0.7 * (HCO3 - 24));
+        return `Expected pCO₂ ≈ ${expected.toFixed(1)} mmHg`;
+      }
+      if (acidBaseType === "Primary respiratory acidosis") {
+        const acute = 0.1 * (pCO2 - 40);
+        const chronic = 0.35 * (pCO2 - 40);
+        return `Expected HCO₃ rise: acute ≈ +${acute.toFixed(1)} | chronic ≈ +${chronic.toFixed(1)}`;
+      }
+      if (acidBaseType === "Primary respiratory alkalosis") {
+        const acute = 0.2 * (40 - pCO2);
+        const chronic = 0.5 * (40 - pCO2);
+        return `Expected HCO₃ drop: acute ≈ -${acute.toFixed(1)} | chronic ≈ -${chronic.toFixed(1)}`;
+      }
+      return "Compensation not applicable or mixed disorder.";
+    }
+
+    function generateClinicalStory(interpretation) {
+      const cases = {
+        "Primary respiratory acidosis": "A 72-year-old man with a history of COPD presents with drowsiness and hypoventilation.",
+        "Primary metabolic acidosis": "A 24-year-old woman with type 1 diabetes presents with nausea and vomiting. Her BGL is 28 mmol/L.",
+        "Primary respiratory alkalosis": "A 30-year-old woman presents with dizziness and chest tightness after a panic attack.",
+        "Primary metabolic alkalosis": "A 58-year-old man presents with weakness after days of vomiting due to gastroenteritis.",
+        "Mixed or compensated acid-base disorder": "A 65-year-old patient with sepsis and renal failure presents with confusion and hypotension."
+      };
+      return cases[interpretation] || "A patient presents with symptoms. Further investigation is needed.";
+    }
+  </script>
+
+</body>
+</html>
